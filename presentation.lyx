@@ -1,0 +1,1047 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+%\usetheme{Warsaw}
+\usetheme{Boadilla}
+% or ...
+
+\usecolortheme{orchid}
+\setbeamertemplate{footline}[frame number]{} % makes the footer EMPTY
+
+\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "lmss" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Managing Dependencies in Upstream Rust Projects for Fedora Compatibility
+\end_layout
+
+\begin_layout Author
+Anne Mulhern
+\end_layout
+
+\begin_layout Institute
+Red Hat, Inc.
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Audience
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Who should want to attend this talk?
+\end_layout
+
+\begin_layout Itemize
+People who package Rust projects for Fedora.
+\end_layout
+
+\begin_layout Itemize
+People who have influence over upstream Rust projects.
+\end_layout
+
+\begin_layout Itemize
+People generally interested in the problem of Rust packaging in Fedora.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Me
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Who is speaking right now?
+\end_layout
+
+\begin_layout Itemize
+I go by 
+\begin_inset Quotes eld
+\end_inset
+
+mulhern
+\begin_inset Quotes erd
+\end_inset
+
+, not by my legal first name.
+\end_layout
+
+\begin_layout Itemize
+I'm the Stratis
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+https://stratis-storage.github.io/
+\end_layout
+
+\end_inset
+
+ team tech-lead.
+\end_layout
+
+\begin_layout Itemize
+I have done most of the Fedora updates for the Rust packages that are part
+ of the Stratis project.
+\end_layout
+
+\begin_layout Itemize
+I do most of the upstream packaging of the Rust packages that are part of
+ the Stratis project.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Expectations
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+What this talk will be like.
+\end_layout
+
+\begin_layout Itemize
+You are encouraged to be forthcoming with your questions.
+\end_layout
+
+\begin_layout Itemize
+I'll do my best to answer them as they come up, although this is only my
+ second experience with Hopin.
+\end_layout
+
+\begin_layout Itemize
+There should be some time for questions at the end.
+\end_layout
+
+\begin_layout Itemize
+I'll try to avoid talking about subjects that I expect will be covered in
+ the Rust packaging tutorial tomorrow
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+My Goal
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+To select dependency requirements for stratisd and for its libraries so
+ that they can be packaged 
+\emph on
+correctly
+\emph default
+ upstream and 
+\emph on
+safely
+\emph default
+ for Fedora
+\end_layout
+
+\begin_layout Itemize
+What is correctness for upstream?
+\end_layout
+
+\begin_layout Itemize
+What is safety for Fedora?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Nomenclature
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+One important distinction
+\end_layout
+
+\begin_layout Description
+Version A single, concrete, version e.g., 
+\begin_inset Quotes eld
+\end_inset
+
+2.1.3
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Requirement A specification, indicating a range of acceptable versions,
+ e.g., 
+\begin_inset Quotes eld
+\end_inset
+
+>=2.10,<3.0.0
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Special Rust requirement syntax: 
+\begin_inset Quotes eld
+\end_inset
+
+^2.1.0
+\begin_inset Quotes erd
+\end_inset
+
+ is just syntactic sugar for 
+\begin_inset Quotes eld
+\end_inset
+
+>=2.1.0,<3.0.0
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+My Goal
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+To select dependency requirements for stratisd and for its libraries so
+ that they can be packaged 
+\emph on
+correctly
+\emph default
+ upstream and 
+\emph on
+safely
+\emph default
+ for Fedora
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename dependency.svg
+	display false
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Safety for Fedora
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Dependency versions specified in a project's Cargo.toml file do 
+\emph on
+not
+\emph default
+ cause build failures in Fedora
+\end_layout
+
+\begin_layout Itemize
+Every upstream crate that your package depends on is 
+\emph on
+required
+\emph default
+ to have a corresponding Fedora package
+\end_layout
+
+\begin_layout Itemize
+The Fedora packaging process ignores the packaged Cargo.lock file entirely
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+It attempts to find Fedora packages that satisfy the dependency requirements
+ specified in the Cargo.toml file and 
+\emph on
+
+\begin_inset Flex Bold
+status open
+
+\begin_layout Plain Layout
+
+\emph on
+fails
+\end_layout
+
+\end_inset
+
+
+\emph default
+ if it can not
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Safety for Fedora
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Counterexample
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename dependency1.svg
+	display false
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Safety for Fedora
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Dependency versions specified in a project's Cargo.toml file do 
+\emph on
+not
+\emph default
+ cause build failures in Fedora
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
+One way to make sure that happens is to be the upstream developer and Fedora
+ packager of the dependency
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
+One way to make sure that happens is to explicitly coordinate with the Fedora
+ packagers of your dependencies
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+Our
+\emph default
+ way is to automate checks of the Fedora repos so that our direct dependencies
+ never get ahead of Fedora releases
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/stratis-storage/ci/blob/master/dependency_management/compare_f
+edora_versions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+We run this script in our CI to prevent our direct dependency versions from
+ exceeding those in Fedora releases
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+If it is necessary for our direct dependency version to exceed what is available
+ in Fedora, we fall back on the strategies above
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+We run this script nightly to notify us if there has been a new, semantically
+ incompatible release of some dependency in Fedora
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+We typically move up to this new dependency version when it is convenient
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Safety for Fedora
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+How to use and understand our approach
+\end_layout
+
+\begin_layout Itemize
+Our approach puts an 
+\emph on
+upper limit
+\emph default
+, or a 
+\emph on
+downward pressure
+\emph default
+, on dependency requirements
+\end_layout
+
+\begin_layout Itemize
+Its place is in upstream development and releasing, not in Fedora
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://vsuete.com/do-not-cut-the-branch-on-which-you-sit-monument/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Correctness for Upstream
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Dependency versions specified in Cargo.toml are high enough to prevent build
+ failures
+\end_layout
+
+\begin_layout Itemize
+Our approach puts a 
+\emph on
+lower limit
+\emph default
+, or an 
+\emph on
+upward pressure
+\emph default
+, on dependency requirements
+\end_layout
+
+\begin_layout Itemize
+Its place is in upstream development and releasing
+\end_layout
+
+\begin_layout Itemize
+It was motivated by packaging concerns, but does not use any Fedora information
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Correctness for Upstream
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Counterexample
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename dependency2.svg
+	display false
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Safety for Upstream
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Dependency versions specified in Cargo.toml are high enough to prevent build
+ failures
+\end_layout
+
+\begin_layout Standard
+How do we verify that the versions specified in Cargo.toml are high enough?
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
+One way is to boost the direct dependency requirements in Cargo.toml whenever
+ a new version comes out
+\end_layout
+
+\begin_layout Itemize
+
+\strikeout on
+One way is to boost the direct dependency requirements in Cargo.toml to the
+ highest that Fedora supports
+\end_layout
+
+\begin_layout Itemize
+Our way is to verify that the dependencies in Cargo.toml are correct by building
+ our project with those versions
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+We run a script
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/stratis-storage/ci/blob/master/dependency_management/set_lower
+_bounds
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ that applies 
+\family typewriter
+cargo update
+\family default
+ to every direct dependency specified in Cargo.toml until all actual dependency
+ versions are the lowest that the requirements allow
+\end_layout
+
+\begin_layout Itemize
+Then we build the project, and if the build fails, we have identified that
+ some dependency is too low; the compiler error will tell us which
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Defects of This Approach
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+My scripts are imperfect
+\end_layout
+
+\begin_layout Itemize
+They are written in Python, not Rust.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Much better to use the parsing and structures in the cargo-metadata
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://crates.io/crates/cargo_metadata
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ and semver
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://crates.io/crates/semver
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ crates
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+They do not handle calculating the lowest version that satisfies the specified
+ requirement in a general way
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+I'm working on that problem...
+\end_layout
+
+\begin_layout Itemize
+It's never been a problem for us, because
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+we always use implict 
+\begin_inset Quotes eld
+\end_inset
+
+^
+\begin_inset Quotes erd
+\end_inset
+
+ specifications
+\end_layout
+
+\begin_layout Itemize
+if there's an audit failure, we bump our requirement in Cargo.toml above
+ the offending version
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Thanks
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Questions?
+\end_layout
+
+\end_deeper
+\begin_layout Frame
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
